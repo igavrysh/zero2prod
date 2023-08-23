@@ -10,7 +10,7 @@ region: sfo3
 services:
   - name: zero2prod
     # Relative to the repository root
-    dockerfile_path: rust/zero2prod/Dockerfile
+    dockerfile_path: Dockerfile
     github:
       # Depending on when you created the repository,
       # the default branch on GitHub might have been named `master`
@@ -20,8 +20,8 @@ services:
       deploy_on_push: true
       # !!! Fill in with your details
       # e.g. LukeMathWalker/zero-to-production
-      repo: igavrysh/random
-    source_dir: rust/zero2prod
+      repo: igavrysh/zero2prod
+    source_dir: .
     # Active probe used by DigitalOcean's to ensure our application is healthy
     health_check:
       # The path to our health check endpoint!
