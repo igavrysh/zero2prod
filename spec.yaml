@@ -11,6 +11,7 @@ services:
   - name: zero2prod
     # Relative to the repository root
     dockerfile_path: Dockerfile
+    source_dir: .
     github:
       # Depending on when you created the repository,
       # the default branch on GitHub might have been named `master`
@@ -21,7 +22,6 @@ services:
       # !!! Fill in with your details
       # e.g. LukeMathWalker/zero-to-production
       repo: igavrysh/zero2prod
-    source_dir: .
     # Active probe used by DigitalOcean's to ensure our application is healthy
     health_check:
       # The path to our health check endpoint!
