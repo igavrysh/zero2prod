@@ -1,3 +1,5 @@
+# CHEF stage
+
 FROM lukemathwalker/cargo-chef:latest-rust-1.71.0 as chef
 WORKDIR /app
 RUN apt update && apt install lld clang -y
@@ -20,6 +22,8 @@ ENV SQLX_OFFLINE true
 
 # Build our project 
 RUN cargo build --release --bin zero2prod
+
+### RUNTIME stage
 
 FROM debian:bullseye-slim AS runtime
 

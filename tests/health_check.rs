@@ -1,6 +1,5 @@
 //! tests/health_check.rs
 use std::net::TcpListener;
-use secrecy::ExposeSecret;
 use sqlx::{PgConnection, Connection, PgPool, Executor};
 use uuid::Uuid;
 use zero2prod::configuration::{get_configuration, DatabaseSettings};
@@ -28,7 +27,9 @@ async fn spawn_app() -> TestApp {
 
     let server = run(listener, connection_pool.clone())
         .expect("Failed to bind address");
+
     let _ = tokio::spawn(server);
+
     TestApp {
         address,
         db_pool: connection_pool,
@@ -37,18 +38,20 @@ async fn spawn_app() -> TestApp {
 
 pub async fn configure_database(config: &DatabaseSettings) -> PgPool {
     let mut connection 
-        = PgConnection::connect(&config.connection_string_without_db().expose_secret())
+        = PgConnection::connect_with(&config.without_db())
             .await
             .expect("Failed to connect to Postgres");
+
     connection
         .execute(format!(r#"CREATE DATABASE "{}";"#, config.database_name).as_str())
         .await
         .expect("Failed to create database.");
 
     let connection_pool 
-        = PgPool::connect(&config.connection_string().expose_secret())
+        = PgPool::connect_with(config.with_db())
             .await
             .expect("Failed to connect to Postgres.");
+
     sqlx::migrate!("./migrations")
         .run(&connection_pool)
         .await
@@ -59,8 +62,11 @@ pub async fn configure_database(config: &DatabaseSettings) -> PgPool {
 
 #[tokio::test]
 async fn health_check_works() {
+
     let app = spawn_app().await;
+
     let client = reqwest::Client::new();
+
     let response = client
         .get(&format!("{}/health_check", &app.address))
         .send()
@@ -68,15 +74,19 @@ async fn health_check_works() {
         .expect("Failed to execute request.");
 
     assert!(response.status().is_success());
+
     assert_eq!(Some(0), response.content_length())
 }
 
 #[tokio::test]
 async fn subscribe_returns_a_200_for_valid_form_data() {
+
     let app = spawn_app().await;
+
     let client = reqwest::Client::new();
 
     let body = "name=le%20guin&email=ursula_le_guin%40gmail.com";
+
     let response = client
         .post(&format!("{}/subscriptions", &app.address))
         .header("Content-Type", "application/x-www-form-urlencoded")
@@ -93,12 +103,15 @@ async fn subscribe_returns_a_200_for_valid_form_data() {
         .expect("Failed to fetch saved subscription.");
 
     assert_eq!(saved.email, "ursula_le_guin@gmail.com");
+
     assert_eq!(saved.name, "le guin");
 }
 
 #[tokio::test]
 async fn subscribe_returns_a_400_when_data_is_missing() {
+
     let app = spawn_app().await;
+
     let client = reqwest::Client::new();
 
     let test_cases = vec![
