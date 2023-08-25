@@ -3,6 +3,7 @@ use std::net::TcpListener;
 use sqlx::{PgConnection, Connection, PgPool, Executor};
 use uuid::Uuid;
 use zero2prod::configuration::{get_configuration, DatabaseSettings};
+use zero2prod::email_client::EmailClient;
 use zero2prod::startup::run;
 // You can inspect what code gets generated using
 // `cargo expand --test health_check` (<- name of the test file)
@@ -25,7 +26,14 @@ async fn spawn_app() -> TestApp {
     let connection_pool = configure_database(&configuraiton.database)
         .await;
 
-    let server = run(listener, connection_pool.clone())
+    let sender_email = configuraiton.email_client.sender()
+        .expect("Invalid sender email address.");
+    let email_client = EmailClient::new(
+        configuraiton.email_client.base_url,
+        sender_email
+    );
+
+    let server = run(listener, connection_pool.clone(), email_client)
         .expect("Failed to bind address");
 
     let _ = tokio::spawn(server);
