@@ -20,6 +20,12 @@ curl \
     --data 'name=gene0824231&email=gene0824231' \
     127.0.0.1:8000/subscriptions --verbose
 ```
+```
+curl --request POST \
+--data 'name=le%20guin&email=ursula_le_guin%40gmail.com' \
+https://zero2prod-j5bix.ondigitalocean.app/subscriptions \
+--verbose
+```
 
 ## To prepare sqlx to work in offline mode (static compilation)
 It must be invoked as a cargo subcommand. All options after `--` are passed to cargo itself. We need to point it at our library since it contains all our SQL queries.
@@ -177,9 +183,23 @@ doctl apps update ee43fcea-9230-4fb5-88aa-0bac02066448 --spec spec.yaml
 DATABASE_URL=<DB CONNECTION STRING FROM DIGITAL OCEAN> sqlx migrate run
 ```
 
+## Sending Emails
 
+### Postmark Send Email Request
 
-curl --request POST \
---data 'name=le%20guin&email=ursula_le_guin%40gmail.com' \
-https://zero2prod-j5bix.ondigitalocean.app/subscriptions \
---verbose
+```
+#TOKEN='get token from Postmark'
+curl "https://api.postmarkapp.com/email" \
+-X POST \
+-H "Accept: application/json" \
+-H "Content-Type: application/json" \
+-H "X-Postmark-Server-Token: $TOKEN" \
+-d '{
+"From": "support@mentalmathgym.app",
+"To": "support@mentalmathgym.app",
+"Subject": "Postmark test",
+"TextBody": "Hello dear Postmark user.",
+"HtmlBody": "<html><body><strong>Hello</strong> dear Postmark user.</body></html>"
+}'
+
+```
