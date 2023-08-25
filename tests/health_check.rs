@@ -28,10 +28,12 @@ async fn spawn_app() -> TestApp {
 
     let sender_email = configuraiton.email_client.sender()
         .expect("Invalid sender email address.");
+    let timeout = configuraiton.email_client.timeout();
     let email_client = EmailClient::new(
         configuraiton.email_client.base_url,
         sender_email,
-        configuraiton.email_client.authorization_token
+        configuraiton.email_client.authorization_token,
+        timeout
     );
 
     let server = run(listener, connection_pool.clone(), email_client)
