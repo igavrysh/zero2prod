@@ -176,3 +176,10 @@ doctl apps update ee43fcea-9230-4fb5-88aa-0bac02066448 --spec spec.yaml
 ```
 DATABASE_URL=<DB CONNECTION STRING FROM DIGITAL OCEAN> sqlx migrate run
 ```
+
+
+
+curl --request POST \
+--data 'name=le%20guin&email=ursula_le_guin%40gmail.com' \
+https://zero2prod-j5bix.ondigitalocean.app/subscriptions \
+--verbose
