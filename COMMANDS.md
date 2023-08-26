@@ -190,9 +190,14 @@ DATABASE_URL=<DB CONNECTION STRING FROM DIGITAL OCEAN> sqlx migrate run
 sqlx migrate add add_status_to_subscriptions
 ```
 
-### Run migration skipping docker
+### Run migration skipping docker for the local (not docker db)
 ```
 SKIP_DOCKER=true ./scripts/init_db.sh
+```
+
+### SQLX run migrations
+```
+sqlx migrate run
 ```
 
 ## Sending Emails
