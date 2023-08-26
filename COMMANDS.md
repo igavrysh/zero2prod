@@ -179,8 +179,20 @@ doctl apps update ee43fcea-9230-4fb5-88aa-0bac02066448 --spec spec.yaml
 
 ## Database Migrations
 
+### Run migration
+
 ```
 DATABASE_URL=<DB CONNECTION STRING FROM DIGITAL OCEAN> sqlx migrate run
+```
+
+### Create migration
+```
+sqlx migrate add add_status_to_subscriptions
+```
+
+### Run migration skipping docker
+```
+SKIP_DOCKER=true ./scripts/init_db.sh
 ```
 
 ## Sending Emails
