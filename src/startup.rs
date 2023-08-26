@@ -1,5 +1,5 @@
 use crate::configuration::{Settings, DatabaseSettings};
-use crate::routes::{subscribe, health_check};
+use crate::routes::{subscribe, confirm, health_check};
 use crate::email_client::EmailClient;
 
 use std::net::TcpListener;
@@ -61,6 +61,7 @@ pub fn run(
             .wrap(TracingLogger::default())
             .route("/health_check", web::get().to(health_check))
             .route("/subscriptions", web::post().to(subscribe))
+            .route("/subscriptions/confirm", web::get().to(confirm))
             .app_data(db_pool.clone())
             .app_data(email_client.clone())
     })
