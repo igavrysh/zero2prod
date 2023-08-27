@@ -1,4 +1,3 @@
-use fake::faker::address::raw;
 use once_cell::sync::Lazy;
 use sqlx::{PgConnection, Connection, PgPool, Executor};
 use uuid::Uuid;
