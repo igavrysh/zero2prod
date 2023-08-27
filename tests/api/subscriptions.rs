@@ -134,4 +134,3 @@ async fn subscribe_sends_a_confirmation_email_with_a_link() {
 
     assert_eq!(html_link, text_link);
 }
-

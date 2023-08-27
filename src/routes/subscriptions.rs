@@ -1,3 +1,4 @@
+use crate::startup::ApplicationBaseUrl;
 use actix_web::{HttpResponse, web};
 use chrono::Utc;
 use uuid::Uuid;
@@ -24,7 +25,7 @@ impl TryFrom<FormData> for NewSubscriber {
 
 #[tracing::instrument(
     name = "Adding a new subscriber",
-    skip(form, pool, email_cleint),
+    skip(form, pool, email_cleint, base_url),
     fields(
         subcriber_email = %form.email,
         subcriber_name = %form.name
@@ -34,6 +35,7 @@ pub async fn subscribe(
     form: web::Form<FormData>,
     pool: web::Data<PgPool>,
     email_cleint: web::Data<EmailClient>,
+    base_url: web::Data<ApplicationBaseUrl>,
 ) -> HttpResponse {
     let new_subscriber =  match form.0.try_into() {
         Ok(form) => form,
@@ -44,7 +46,11 @@ pub async fn subscribe(
         return HttpResponse::InternalServerError().finish();
     }
 
-    if send_confirmation_email(&email_cleint, new_subscriber)
+    if send_confirmation_email(
+        &email_cleint, 
+        new_subscriber,
+        &base_url.0
+    )
         .await
         .is_err()
     {
@@ -60,9 +66,10 @@ pub async fn subscribe(
 )]
 pub async fn send_confirmation_email(
     email_client: &EmailClient,
-    new_subscriber: NewSubscriber
+    new_subscriber: NewSubscriber,
+    base_url: &str,
 ) -> Result<(), reqwest::Error> {
-    let confirmation_link = "https://my-api.com/subscriptions/confirm";
+    let confirmation_link = format!("{}/subscriptions/confirm?subscription_token=mytoken", base_url);
     let html_body = format!(
         "Welcome to our newsletter!<br />\
         Click <a href=\"{}\">here</a> to confirm your subscription.",
@@ -74,7 +81,7 @@ pub async fn send_confirmation_email(
 
     email_client
         .send_email(
-            new_subscriber.email, 
+            new_subscriber.email,
             "Welcome!",
             &html_body,
             &plain_body
