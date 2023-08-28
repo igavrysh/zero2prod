@@ -119,6 +119,12 @@ pub async fn send_confirmation_email(
             &plain_body,
         )
         .await
+        .map_err(|e| {
+            tracing::error!("Failed to send email with email client: {:?}", e);
+            e
+        })?;
+
+    Ok(())
 }
 
 #[tracing::instrument(

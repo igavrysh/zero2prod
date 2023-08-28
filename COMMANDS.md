@@ -22,9 +22,15 @@ curl \
 ```
 ```
 curl --request POST \
---data 'name=le%20guin&email=ursula_le_guin%40gmail.com' \
-https://zero2prod-j5bix.ondigitalocean.app/subscriptions \
---verbose
+    --data 'name=le%20guin&email=ursula_le_guin%40gmail.com' \
+    https://zero2prod-j5bix.ondigitalocean.app/subscriptions \
+    --verbose
+```
+```
+curl --request POST \
+    --data 'name=gene123&email=mickey3d1989%40gmail.com' \
+    http://localhost:8000/subscriptions \
+    --verbose
 ```
 
 ## To prepare sqlx to work in offline mode (static compilation)
