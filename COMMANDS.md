@@ -235,3 +235,12 @@ export RUST_LOG="sqlx=error,info"
 export TEST_LOG=enabled
 cargo t subscribe_fails_if_there_is_a_fatal_database_error | bunyan
 ```
+
+
+## Logs formatting
+
+### Install Bunyan for logs pretty-print isntead of json
+
+```
+cargo install banyan
+```
