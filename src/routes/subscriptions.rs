@@ -237,7 +237,7 @@ impl ResponseError for SubscribeError {
     }
 }
 
-
+// this will be removed in the main branch! come back here if needs to be studied more
 /* 
 
 pub enum SubscribeError {
