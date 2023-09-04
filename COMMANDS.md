@@ -263,13 +263,10 @@ TEST_LOG=true cargo test --quiet --release \
     newsletters_are_delivered | grep "VERIFY PASSWORD" | bunyan
 ```
 
-
 ```
 TEST_LOG=true cargo test --release \
 non_existing_user_is_rejected | grep "HTTP REQUEST" | bunyan
 
-
 TEST_LOG=true cargo test --release \
 invalid_password_is_rejected | grep "HTTP REQUEST" | bunyan
-
 ```
