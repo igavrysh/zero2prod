@@ -36,7 +36,7 @@ pub fn init_subscriber(subscriber: impl Subscriber + Sync + Send) {
     set_global_default(subscriber).expect("Failed to set subscriber");
 }
 
-pub fn spanw_blocking_with_tracking<F, R>(f: F) -> JoinHandle<R>
+pub fn spawn_blocking_with_tracing<F, R>(f: F) -> JoinHandle<R>
 where
     F: FnOnce() -> R + Send + 'static,
     R: Send + 'static,

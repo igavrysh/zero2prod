@@ -5,7 +5,7 @@ use reqwest::{StatusCode, header::{self, HeaderValue}};
 use secrecy::{Secret, ExposeSecret};
 use sqlx::PgPool;
 
-use crate::{routes::error_chain_fmt, email_client::EmailClient, domain::SubscriberEmail};
+use crate::{routes::error_chain_fmt, email_client::EmailClient, domain::SubscriberEmail, telemetry::spawn_blocking_with_tracing};
 
 #[derive(serde::Deserialize)]
 pub struct BodyData {
@@ -191,23 +191,16 @@ async fn validate_credentials(
         .map_err(PublishError::UnexpectedError)?
         .ok_or_else(|| PublishError::AuthError(anyhow::anyhow!("Unknown username.")))?;
 
-    let expph
-        = PasswordHash::new(
-            &expected_password_hash.expose_secret()
+    spawn_blocking_with_tracing(move || {
+        verify_password_hash(
+            expected_password_hash, 
+            credentials.password
         )
-        .context("Failed to parse hash in PHC string format")
-        .map_err(PublishError::UnexpectedError)?;
-
-    tracing::info_span!("Verify password hash")
-        .in_scope(|| {
-            Argon2::default()
-                .verify_password(
-                    credentials.password.expose_secret().as_bytes(),
-                    &expph
-                )
-        })
-        .context("Invalid password.")
-        .map_err(PublishError::AuthError)?;
+    })
+    .await
+    .context("Failed to spawn blocking task.")
+    .map_err(PublishError::UnexpectedError)?
+    .await?;
 
     Ok(user_id)
 }
@@ -232,4 +225,28 @@ async fn get_stored_credentials(
         .context("Failed to perform a query to retireve stored credentials.")?
         .map(|r| (r.user_id, Secret::new(r.password_hash)));
     Ok(row)
+}
+
+#[tracing::instrument(
+    name = "Verify password hash", 
+    skip(expected_password_hash, password_candidate)
+)]
+async fn verify_password_hash(
+    expected_password_hash: Secret<String>,
+    password_candidate: Secret<String>
+) -> Result<(), PublishError> {
+    let expected_password_hash 
+        = PasswordHash::new(
+            expected_password_hash.expose_secret()
+        )
+        .context("Failed to parse hash in PHC string format.")
+        .map_err(PublishError::UnexpectedError)?;
+
+    Argon2::default()
+        .verify_password(
+            password_candidate.expose_secret().as_bytes(), 
+            &expected_password_hash,
+        )
+        .context("Invalid password.")
+        .map_err(PublishError::AuthError)
 }
