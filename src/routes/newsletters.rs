@@ -1,6 +1,7 @@
-use actix_web::{HttpResponse, web, ResponseError};
+use actix_web::{HttpResponse, web, ResponseError, http::header::HeaderMap};
 use anyhow::Context;
 use reqwest::StatusCode;
+use secrecy::Secret;
 use sqlx::PgPool;
 
 use crate::{routes::error_chain_fmt, email_client::EmailClient, domain::SubscriberEmail};
@@ -98,3 +99,24 @@ impl ResponseError for PublishError {
         }
     }
 }
+
+struct Credentials {
+    username: String,
+    password: Secret<String>,
+}
+
+/* 
+
+fn basic_authentication(headers: &HeaderMap) -> Result<Credentials, anyhow::Error> {
+    let header_value = headers
+        .get("Authorization")
+        .context("The 'Authrorization' header was missing")?
+        .to_str()
+        .context("The 'Authorization' header was not a valid UTF8 string.")?;
+    let base64encoded_segment = header_value
+        .strip_prefix("Basic ")
+        .context("The authorization scheme was not 'Basic'.")?
+
+}
+
+*/
