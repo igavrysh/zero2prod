@@ -256,3 +256,9 @@ cargo install banyan
 ```
 TEST_LOG=true cargo t newsletters_are_not_delivered | bunyan
 ```
+
+## To run milliseconds benchmark:
+```
+TEST_LOG=true cargo test --quiet --release \
+    newsletters_are_delivered | grep "VERIFY PASSWORD" | bunyan
+```
