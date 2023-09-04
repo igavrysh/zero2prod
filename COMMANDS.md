@@ -250,3 +250,9 @@ cargo t subscribe_fails_if_there_is_a_fatal_database_error_subscription_table_is
 ```
 cargo install banyan
 ```
+
+## To check TEST log output
+
+```
+TEST_LOG=true cargo t newsletters_are_not_delivered | bunyan
+```
