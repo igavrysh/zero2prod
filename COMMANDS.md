@@ -61,7 +61,7 @@ docker images zero2prod
 
 ### To clean up Docker system
 ```
-docker  system prune
+docker system prune
 ```
 
 ### View Docker resources
