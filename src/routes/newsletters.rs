@@ -4,7 +4,7 @@ use reqwest::{StatusCode, header::{self, HeaderValue}};
 use secrecy::Secret;
 use sqlx::PgPool;
 
-use crate::{routes::error_chain_fmt, email_client::EmailClient, domain::SubscriberEmail, telemetry::spawn_blocking_with_tracing, authentication::{AuthError, validate_credentials, Credentials}};
+use crate::{routes::error_chain_fmt, email_client::EmailClient, domain::SubscriberEmail, authentication::{AuthError, validate_credentials, Credentials}};
 
 #[derive(serde::Deserialize)]
 pub struct BodyData {
