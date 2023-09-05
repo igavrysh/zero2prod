@@ -1,5 +1,5 @@
 use crate::configuration::{Settings, DatabaseSettings};
-use crate::routes::{subscribe, confirm, health_check, publish_newsletter, home};
+use crate::routes::{subscribe, confirm, health_check, publish_newsletter, home, login_form, login};
 use crate::email_client::EmailClient;
 
 use std::net::TcpListener;
@@ -77,6 +77,8 @@ pub fn run(
             .route("/subscriptions/confirm", web::get().to(confirm))
             .route("/newsletters", web::post().to(publish_newsletter))
             .route("/", web::get().to(home))
+            .route("/login", web::get().to(login_form))
+            .route("/login", web::post().to(login))
             .app_data(db_pool.clone())
             .app_data(email_client.clone())
             .app_data(base_url.clone())
