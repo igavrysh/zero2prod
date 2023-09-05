@@ -34,7 +34,7 @@ pub async fn login_form(
         Some(query) => match query.0.verify(&secret) {
             Ok(error) => {
                 format!("<p><i>{}</i></p>", htmlescape::encode_minimal(&error))
-            }
+            },
             Err(e) => {
                 tracing::warn!(
                     error.message = %e,

@@ -1,6 +1,6 @@
-use actix_web::{HttpResponse, web, ResponseError, error::InternalError};
+use actix_web::{HttpResponse, web, error::InternalError};
 use hmac::{Hmac, Mac};
-use reqwest::{header::LOCATION, StatusCode};
+use reqwest::header::LOCATION;
 use secrecy::{Secret, ExposeSecret};
 use sqlx::PgPool;
 
@@ -55,8 +55,9 @@ pub async fn login(
                 };
 
                 let response = HttpResponse::SeeOther()
-                    .insert_header((LOCATION, format!("/login?error={}&tag={:x}", query_string, hmac_tag)))
+                    .insert_header((LOCATION, format!("/login?{}&tag={:x}", query_string, hmac_tag)))
                     .finish();
+
                 Err(InternalError::from_response(e, response))
             }
         }
