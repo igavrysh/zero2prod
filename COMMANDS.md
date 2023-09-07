@@ -270,3 +270,9 @@ non_existing_user_is_rejected | grep "HTTP REQUEST" | bunyan
 TEST_LOG=true cargo test --release \
 invalid_password_is_rejected | grep "HTTP REQUEST" | bunyan
 ```
+
+
+## Docker list stopped containers
+```
+docker ps -a
+```
