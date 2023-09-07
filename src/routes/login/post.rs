@@ -1,4 +1,4 @@
-use actix_web::{HttpResponse, web, error::InternalError, cookie::Cookie};
+use actix_web::{HttpResponse, web, error::InternalError};
 use actix_web_flash_messages::FlashMessage;
 use reqwest::header::LOCATION;
 use secrecy::Secret;
