@@ -28,6 +28,7 @@ r#"
                     name="username"
                 >
             </label>
+            <br>
             <label>Password
                 <input
                     type="password"
@@ -35,7 +36,7 @@ r#"
                     name="password"
                 >
             </label>
-
+            <br>
             <button type="submit">Login</button>
 
         </form>
