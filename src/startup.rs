@@ -1,5 +1,5 @@
 use crate::configuration::{Settings, DatabaseSettings};
-use crate::routes::{subscribe, confirm, health_check, publish_newsletter, home, login_form, login, admin_dashboard};
+use crate::routes::{subscribe, confirm, health_check, publish_newsletter, home, login_form, login, admin_dashboard, change_password_form, change_password};
 use crate::email_client::EmailClient;
 
 use std::net::TcpListener;
@@ -91,6 +91,8 @@ pub async fn run(
             .wrap(SessionMiddleware::new(redis_store.clone(), secret_key.clone()))
             .wrap(TracingLogger::default())
             .route("/admin/dashboard", web::get().to(admin_dashboard))
+            .route("/admin/password", web::get().to(change_password_form))
+            .route("/admin/password", web::post().to(change_password))
             .route("/health_check", web::get().to(health_check))
             .route("/subscriptions", web::post().to(subscribe))
             .route("/subscriptions/confirm", web::get().to(confirm))
