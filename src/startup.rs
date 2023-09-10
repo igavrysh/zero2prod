@@ -1,5 +1,5 @@
 use crate::configuration::{Settings, DatabaseSettings};
-use crate::routes::{subscribe, confirm, health_check, publish_newsletter, home, login_form, login, admin_dashboard, change_password_form, change_password};
+use crate::routes::{subscribe, confirm, health_check, publish_newsletter, home, login_form, login, admin_dashboard, change_password_form, change_password, log_out};
 use crate::email_client::EmailClient;
 
 use std::net::TcpListener;
@@ -93,6 +93,7 @@ pub async fn run(
             .route("/admin/dashboard", web::get().to(admin_dashboard))
             .route("/admin/password", web::get().to(change_password_form))
             .route("/admin/password", web::post().to(change_password))
+            .route("/admin/logout", web::post().to(log_out))
             .route("/health_check", web::get().to(health_check))
             .route("/subscriptions", web::post().to(subscribe))
             .route("/subscriptions/confirm", web::get().to(confirm))
