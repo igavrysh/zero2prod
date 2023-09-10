@@ -1,3 +1,4 @@
+use crate::authentication::reject_anonymous_users;
 use crate::configuration::{Settings, DatabaseSettings};
 use crate::routes::{subscribe, confirm, health_check, publish_newsletter, home, login_form, login, admin_dashboard, change_password_form, change_password, log_out};
 use crate::email_client::EmailClient;
@@ -9,6 +10,7 @@ use actix_web::cookie::Key;
 use actix_web::{dev::Server, HttpServer, web, App};
 use actix_web_flash_messages::FlashMessagesFramework;
 use actix_web_flash_messages::storage::CookieMessageStore;
+use actix_web_lab::middleware::from_fn;
 use secrecy::{Secret, ExposeSecret};
 use sqlx::PgPool;
 use sqlx::postgres::PgPoolOptions;
@@ -88,12 +90,11 @@ pub async fn run(
     let server = HttpServer::new(move || {
         App::new()
             .wrap(message_framework.clone())
-            .wrap(SessionMiddleware::new(redis_store.clone(), secret_key.clone()))
+            .wrap(SessionMiddleware::new(
+                redis_store.clone(),
+                secret_key.clone()
+            ))
             .wrap(TracingLogger::default())
-            .route("/admin/dashboard", web::get().to(admin_dashboard))
-            .route("/admin/password", web::get().to(change_password_form))
-            .route("/admin/password", web::post().to(change_password))
-            .route("/admin/logout", web::post().to(log_out))
             .route("/health_check", web::get().to(health_check))
             .route("/subscriptions", web::post().to(subscribe))
             .route("/subscriptions/confirm", web::get().to(confirm))
@@ -101,6 +102,14 @@ pub async fn run(
             .route("/", web::get().to(home))
             .route("/login", web::get().to(login_form))
             .route("/login", web::post().to(login))
+            .service(
+                web::scope("/admin")
+                    .wrap(from_fn(reject_anonymous_users))
+                    .route("/admin/dashboard", web::get().to(admin_dashboard))
+                    .route("/admin/password", web::get().to(change_password_form))
+                    .route("/admin/password", web::post().to(change_password))
+                    .route("/admin/logout", web::post().to(log_out))
+            )
             .app_data(db_pool.clone())
             .app_data(email_client.clone())
             .app_data(base_url.clone())
