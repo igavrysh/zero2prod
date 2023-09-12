@@ -25,6 +25,9 @@ pub async fn validate_credentials(
     pool: &PgPool,
 ) -> Result<uuid::Uuid, AuthError> {
     let mut user_id = None;
+    // valdiate credentials should work +- the same time when the user is in db 
+    // vs user is not in the database - to disallow db user check attack
+    // thats why proxy password hash is used below
     let mut expected_password_hash = Secret::new(
         "$argon2id$v=19$m=15000,t=2,p=1$\
         gZiV/M1gPc22ElAH/Jh1Hw$\
