@@ -16,7 +16,7 @@ COPY --from=planner /app/recipe.json recipe.json
 RUN cargo chef cook --release --recipe-path recipe.json
 
 # Up to this point, if our dependency tree stays the same,
-# all alyers should be cached.
+# all layers should be cached.
 COPY . .
 ENV SQLX_OFFLINE true
 

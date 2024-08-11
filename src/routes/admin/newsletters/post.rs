@@ -1,5 +1,6 @@
 use actix_web::{HttpResponse, web, ResponseError, http::header::HeaderMap, HttpRequest};
 use anyhow::Context;
+use base64::Engine;
 use reqwest::{StatusCode, header::{self, HeaderValue}};
 use secrecy::Secret;
 use sqlx::PgPool;
@@ -155,7 +156,8 @@ fn basic_authentication(headers: &HeaderMap) -> Result<Credentials, anyhow::Erro
     let base64encoded_segment = header_value
         .strip_prefix("Basic ")
         .context("The authorization scheme was not 'Basic'.")?;
-    let decoded_bytes = base64::decode_config(base64encoded_segment, base64::STANDARD)
+    let decoded_bytes = base64::engine::general_purpose::STANDARD
+        .decode(base64encoded_segment)
         .context("Failed to base64-decode 'Basic credentials.")?;
     let decoded_credentials = String::from_utf8(decoded_bytes)?;
 

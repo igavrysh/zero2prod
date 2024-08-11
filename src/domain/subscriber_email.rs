@@ -16,7 +16,8 @@ impl SubscriberEmail {
 }
 
 impl AsRef<str> for SubscriberEmail {
-    fn as_ref(&self) -> &str {
+    fn as_ref(&self) ->
+    &str {
         &self.0
     }
 }
@@ -74,7 +75,6 @@ mod tests {
             Self(email)
         }
     }
-
 
     #[quickcheck_macros::quickcheck]
     fn valid_emails_are_parsed_successfully(valid_email: ValidEmailFixture) -> bool {

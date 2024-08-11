@@ -25,3 +25,6 @@ sudo apt install pgadmin4-web
 
 # Configure the webserver, if you installed pgadmin4-web:
 sudo /usr/pgadmin4/bin/setup-web.sh
+
+# use test email: test@test.com
+# use testpass: 123456
